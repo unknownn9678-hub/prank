@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Diagnostic</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Rapid flickering animation */
+        @keyframes strobe {
+            0% { background-color: white; }
+            50% { background-color: black; }
+            100% { background-color: white; }
+        }
+
+        #flicker-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            /* 0.04s creates a very high-intensity strobe effect */
+            animation: strobe 0.04s infinite;
+        }
+
+        button {
+            padding: 25px 50px;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            z-index: 10;
+            background: #111;
+            color: #fff;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+
+        /* Hide the YouTube player off-screen */
+        #yt-player {
+            position: absolute;
+            top: -999px;
+            left: -999px;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="startButton">RUN SYSTEM SCAN</button>
+
+    <div id="flicker-overlay"></div>
+    
+    <div id="yt-player"></div>
+
+    <script>
+        // 1. Load the YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '0',
+                width: '0',
+                videoId: 'zx59bimwvIo', // Your requested song ID
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'zx59bimwvIo' // Required for the loop to work
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            console.log("Player ready");
+        }
+
+        const btn = document.getElementById('startButton');
+        const overlay = document.getElementById('flicker-overlay');
+
+        btn.addEventListener('click', () => {
+            // Remove button and start strobe
+            btn.style.display = 'none';
+            overlay.style.display = 'block';
+            
+            // Start the audio
+            if (player) {
+                player.unMute();
+                player.setVolume(100);
+                player.playVideo();
+            }
+        });
+    </script>
+</body>
+</html>
